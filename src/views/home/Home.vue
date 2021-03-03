@@ -11,9 +11,11 @@
 
         <feature-view />
 
-        <tab-control :titles="['流行','新款','精选']"/>
+        <tab-control 
+            :titles="['流行','新款','精选']"
+            @tabClick="tabClick"/>
 
-        <goods-list :goods="goods['pop'].list">
+        <goods-list :goods="showGoods">
 
         </goods-list>
     </div>
@@ -48,7 +50,8 @@
                     'pop':{page:0,list:[]},
                     'new':{page:0,list:[]},
                     'sell':{page:0,list:[]},
-                }
+                },
+                currentType:'pop'
             }
         },
         created(){
@@ -59,7 +62,32 @@
                 this.getHomeGoods('new');
                 this.getHomeGoods('sell');
         },
+        computed:{
+            showGoods(){
+                return this.goods[this.currentType].list
+            }
+        },
         methods:{
+            /**
+             * 事件监听相关的方法
+             */
+            tabClick(index){
+                switch(index){
+                    case 0:
+                        this.currentType = "pop"
+                    break
+
+                    case 1:
+                        this.currentType = "new"
+                    break
+
+                    case 2:
+                        this.currentType = "sell"
+                }
+            },
+            /**
+             * 网络请求相关的方法
+             */
             getHomeMultidata(){
                 getHomeMultidata().then(res=>{
                     // console.log(res);
