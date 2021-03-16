@@ -31,7 +31,7 @@
     }
 </script>
 
-<style>
+<style scoped>
     .tab-control{
         display:flex;
         text-align: center;
@@ -51,8 +51,8 @@
         color:var(--color-high-text);
         border-bottom:3px solid var(--color-tint);
     }
-    .tab-control{
+    /* .tab-control{
         position: sticky;
         top:44px;
-    }
+    } */
 </style>

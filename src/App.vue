@@ -1,7 +1,13 @@
 <template>
   <div id="app">
-    <main-tab-bar></main-tab-bar>
-    <router-view/>
+    <main-tab-bar/>
+    
+    <!--keep-alive3.0使用方式-->
+    <router-view v-slot="{ Component }">
+      <keep-alive exclude="Detail">
+          <component :is="Component" />
+      </keep-alive>
+    </router-view>
   </div>
 </template>
 <script>
