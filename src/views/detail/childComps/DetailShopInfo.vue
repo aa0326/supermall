@@ -1,5 +1,5 @@
 <template>
-  <div class="shop-info">
+  <div class="shop-info" v-if="Object.keys(shop).length !== 0">
     <div class="shop-top">
       <img :src="shop.logo" />
       <span class="title">{{ shop.name }}</span>
@@ -7,8 +7,11 @@
     <div class="shop-middle">
       <div class="shop-middle-item shop-middle-left">
         <div class="info-sells">
-          <div class="sells-count">
-            {{ shop.sells | sellCountFilter }}
+          <div class="sells-count" v-if="shop.sells < 10000">
+            {{shop.sells}}
+          </div>
+          <div class="sells-count" v-else>
+            {{(shop.sells / 10000).toFixed(1)+'万'}}
           </div>
           <div class="sells-text">总销量</div>
         </div>
@@ -43,15 +46,15 @@
 export default {
   name: "DetailShopInfo",
   props: {
-    shop: {
+    shop:{
       type: Object,
       default() {
-        return {};
-      },
-    },
+        return {}
+      }
+    }
   },
   filters: {
-    sellCountFilter: function (value) {
+    sellCountFilter:function (value) {
       if (value < 10000) return value;
       return (value / 10000).toFixed(1) + "万";
     },

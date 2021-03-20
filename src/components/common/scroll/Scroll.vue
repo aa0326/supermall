@@ -39,7 +39,7 @@
                 this.$emit('scroll',position)
             })
             //监听scroll滚动到底部
-            this.scroll.on('pullingUp',()=>{
+            if(this.pullUpLoad) this.scroll.on('pullingUp',()=>{
                 this.$emit('pullingUp')
             })
         },
