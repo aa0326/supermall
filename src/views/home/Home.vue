@@ -61,7 +61,8 @@
     /**
      * 公共事件函数导入
     */
-    import {debounce} from 'common/utils'
+    import {itemListenerMixin} from 'common/mixin'
+    // import {debounce} from 'common/utils'
     /**
      * 方法引入
      */
@@ -81,7 +82,8 @@
                 isShowBackTop:false,
                 tabOffsetTop:0,
                 isTabFixed:false,
-                saveY:0
+                saveY:0,
+                
             }
         },
         created(){
@@ -93,11 +95,11 @@
                 this.getHomeGoods('sell');
                 
         },
+        mixins:[
+            itemListenerMixin
+        ],
         mounted(){
-            let refresh=debounce(this.$refs.scroll.refresh,500)
-            this.$bus.on('itemImageLoad',()=>{
-                refresh()
-            })
+            
         },
         //监听keep-alive
         activated(){
@@ -105,7 +107,11 @@
             this.$refs.scroll.scrollTo(0,this.saveY)
         },
         deactivated(){
+            //保存y值
             this.saveY = this.$refs.scroll.getScrollY()
+            
+            //2.取消全局事件监听
+            this.$bus.off('itemImgLoad',this.itemImgListener)
         },
         computed:{
             showGoods(){

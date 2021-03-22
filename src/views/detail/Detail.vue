@@ -1,18 +1,21 @@
 <template>
     <div id="detail">
         <detail-nav-bar/>
-        <scroll class="content">
+        <scroll class="content" ref="scroll">
             <detail-swiper :top-images="topImages"/>
             <detail-base-info :goods="goods"/>
             <detail-shop-info :shop="shop" />
             <detail-goods-info :detail-info="detailInfo" @ImageLoad="ImageLoad"/>
             <detail-param-info :paramInfo="paramInfo"/>
+            <detail-comment-info :commentInfo="commentInfo"></detail-comment-info>
+            <goods-list :goods="recommendList"/>
         </scroll>
     </div>
 </template>
 
 <script>
     import Scroll from 'components/common/scroll/Scroll'
+    import GoodsList from 'components/content/goods/GoodsList'
 
     import DetailNavBar from './childComps/DetailNavBar'
     import DetailSwiper from './childComps/DetailSwiper'
@@ -20,8 +23,11 @@
     import DetailShopInfo from './childComps/DetailShopInfo'
     import DetailGoodsInfo from './childComps/DetailGoodsInfo'
     import DetailParamInfo from './childComps/DetailParamInfo'
+    import DetailCommentInfo from './childComps/DetailCommentInfo'
+
     
-    import {getDetail,Goods,Shop,GoodsParam} from 'network/detail'
+    import {itemListenerMixin} from 'common/mixin'
+    import {getDetail,Goods,Shop,GoodsParam,getRecommend} from 'network/detail'
     export default {
         name:'Detail',
         data(){
@@ -31,11 +37,20 @@
                 goods:{},
                 shop:{},
                 detailInfo:{},
-                paramInfo:{}
+                paramInfo:{},
+                commentInfo:{},
+                recommendList:[],
             }
         },
         created(){
            this._getDetailData();
+           this._getRecommend();
+        },
+        mixins:[
+            itemListenerMixin
+        ],
+        mounted(){
+            
         },
         methods:{
             //请求商品信息
@@ -59,6 +74,16 @@
 
                     //获取参数信息
                     this.paramInfo = new GoodsParam(data.itemParams.info,data.itemParams.rule)
+
+                    //获取评价信息
+                    if (data.rate.list) {
+                        this.commentInfo = data.rate.list[0];
+                    }
+                })
+            },
+            _getRecommend(){
+                getRecommend().then(res=>{
+                    this.recommendList = res.data.list
                 })
             },
             ImageLoad(){
@@ -67,12 +92,14 @@
         },
         components:{
             Scroll,
+            GoodsList,
             DetailNavBar,
             DetailSwiper,
             DetailBaseInfo,
             DetailShopInfo,
             DetailGoodsInfo,
-            DetailParamInfo
+            DetailParamInfo,
+            DetailCommentInfo
         }
     }
 </script>
