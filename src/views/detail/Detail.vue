@@ -1,14 +1,14 @@
 <template>
     <div id="detail">
-        <detail-nav-bar/>
-        <scroll class="content" ref="scroll">
+        <detail-nav-bar @titleClick="titleClick" ref="DetailNavBar"/>
+        <scroll class="content" ref="scroll" :probeType="3" @scroll="scroll">
             <detail-swiper :top-images="topImages"/>
             <detail-base-info :goods="goods"/>
             <detail-shop-info :shop="shop" />
             <detail-goods-info :detail-info="detailInfo" @ImageLoad="ImageLoad"/>
-            <detail-param-info :paramInfo="paramInfo"/>
-            <detail-comment-info :commentInfo="commentInfo"></detail-comment-info>
-            <goods-list :goods="recommendList"/>
+            <detail-param-info  ref="params" :paramInfo="paramInfo"/>
+            <detail-comment-info ref="comment" :commentInfo="commentInfo"></detail-comment-info>
+            <goods-list ref="recommend" :goods="recommendList"/>
         </scroll>
     </div>
 </template>
@@ -27,6 +27,7 @@
 
     
     import {itemListenerMixin} from 'common/mixin'
+    import {debounce} from 'common/utils'
     import {getDetail,Goods,Shop,GoodsParam,getRecommend} from 'network/detail'
     export default {
         name:'Detail',
@@ -40,11 +41,21 @@
                 paramInfo:{},
                 commentInfo:{},
                 recommendList:[],
+                themeTopYs:[],
+                getThemeTopY:null,
+                currentIndex:0
             }
         },
         created(){
            this._getDetailData();
            this._getRecommend();
+           this.getThemeTopY = debounce(()=>{
+                this.themeTopYs = [];
+                this.themeTopYs.push([0]);
+                this.themeTopYs.push([this.$refs.params.$el.offsetTop]);
+                this.themeTopYs.push([this.$refs.comment.$el.offsetTop]);
+                this.themeTopYs.push([this.$refs.recommend.$el.offsetTop]);
+           },500);
         },
         mixins:[
             itemListenerMixin
@@ -88,6 +99,25 @@
             },
             ImageLoad(){
                 this.$refs.scroll.refresh()
+                this.getThemeTopY();
+            },
+            titleClick(key){
+                this.$refs.scroll.scrollTo(0,-this.themeTopYs[key])
+            },
+            scroll(position){
+                const positionY = -position.y
+
+                let length = this.themeTopYs.length;
+                for (let i = 0; i < length; i++) {
+                    
+                    if( this.currentIndex !== i && 
+                        ( (i < length-1 && positionY >= this.themeTopYs[i] && positionY <= this.themeTopYs[i+1]) 
+                        || ( i===length-1 && positionY >= this.themeTopYs[i]) )){
+                        this.currentIndex = i;
+                        this.$refs.DetailNavBar.currentIndex = this.currentIndex;
+                    }
+                    
+                }
             }
         },
         components:{
