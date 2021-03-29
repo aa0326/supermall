@@ -50,7 +50,6 @@
     import NavBar from 'components/common/navbar/NavBar'
     import TabControl from 'components/content/tabControl/TabControl'
     import GoodsList from 'components/content/goods/GoodsList'
-    import BackTop from 'components/content/backTop/BackTop'
     
     /**
      * 子组件引入
@@ -61,7 +60,7 @@
     /**
      * 公共事件函数导入
     */
-    import {itemListenerMixin} from 'common/mixin'
+    import {itemListenerMixin,backTopMixin} from 'common/mixin'
     // import {debounce} from 'common/utils'
     /**
      * 方法引入
@@ -79,7 +78,6 @@
                     'sell':{page:0,list:[]},
                 },
                 currentType:'pop',
-                isShowBackTop:false,
                 tabOffsetTop:0,
                 isTabFixed:false,
                 saveY:0,
@@ -96,7 +94,8 @@
                 
         },
         mixins:[
-            itemListenerMixin
+            itemListenerMixin,
+            backTopMixin
         ],
         mounted(){
             
@@ -142,12 +141,9 @@
             swiperImageLoad(){
                 this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
             },
-            backClick(){
-                this.$refs.scroll.scrollTo(0,0)
-            },
             contentScroll(position){
                 //1.监听BackTop显示/隐藏
-                this.isShowBackTop = (-position.y)>1000
+                this.showBack(position);
 
                 //2.监听tabControl是否吸顶
                 this.isTabFixed = (-position.y)> this.tabOffsetTop
@@ -182,7 +178,6 @@
             TabControl,
             GoodsList,
             Scroll,
-            BackTop
         }
     }
 </script>

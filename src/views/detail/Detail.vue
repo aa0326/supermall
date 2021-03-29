@@ -10,6 +10,8 @@
             <detail-comment-info ref="comment" :commentInfo="commentInfo"></detail-comment-info>
             <goods-list ref="recommend" :goods="recommendList"/>
         </scroll>
+        <back-top @click="backClick" v-show="isShowBackTop"/>
+        <detail-bottom-bar @addToCart="addToCart"></detail-bottom-bar>
     </div>
 </template>
 
@@ -24,9 +26,9 @@
     import DetailGoodsInfo from './childComps/DetailGoodsInfo'
     import DetailParamInfo from './childComps/DetailParamInfo'
     import DetailCommentInfo from './childComps/DetailCommentInfo'
-
+    import DetailBottomBar from './childComps/DetailBottomBar'
     
-    import {itemListenerMixin} from 'common/mixin'
+    import {itemListenerMixin,backTopMixin} from 'common/mixin'
     import {debounce} from 'common/utils'
     import {getDetail,Goods,Shop,GoodsParam,getRecommend} from 'network/detail'
     export default {
@@ -58,7 +60,8 @@
            },500);
         },
         mixins:[
-            itemListenerMixin
+            itemListenerMixin,
+            backTopMixin
         ],
         mounted(){
             
@@ -82,7 +85,7 @@
 
                     //获取商品详情信息
                     this.detailInfo = data.detailInfo
-
+                    console.log(data);
                     //获取参数信息
                     this.paramInfo = new GoodsParam(data.itemParams.info,data.itemParams.rule)
 
@@ -118,6 +121,17 @@
                     }
                     
                 }
+
+                this.showBack(position);
+            },
+            addToCart(){
+                const product = {};
+                product.image = this.topImages[0];
+                product.title = this.goods.title;
+                product.desc = this .detailInfo.desc;
+                product.price = this.goods.lowNowPrice
+                product.iid = this. iid;
+                this.$store.dispatch('addCart',product)
             }
         },
         components:{
@@ -129,7 +143,8 @@
             DetailShopInfo,
             DetailGoodsInfo,
             DetailParamInfo,
-            DetailCommentInfo
+            DetailCommentInfo,
+            DetailBottomBar
         }
     }
 </script>
@@ -142,10 +157,10 @@
         height:100vh;
     }
     .content{
-          overflow: hidden;
+        overflow: hidden;
         position: absolute;
         top:44px;
-        bottom: 44px;
+        bottom:49px;
         left:0;
         right:0;
     }
