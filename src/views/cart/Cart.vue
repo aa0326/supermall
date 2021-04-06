@@ -9,6 +9,8 @@
         <scroll class="content">
             <cart-list></cart-list>
         </scroll>
+        
+        <cart-bottom-bar />
     </div>
 </template>
 
@@ -19,13 +21,15 @@
     import NavBar from 'components/common/navbar/NavBar'
 
     import CartList from './childComps/CartList'
+    import CartBottomBar from './childComps/CartBottomBar'
     
     export default {
         name:'Cart',
         components:{
             Scroll,
             NavBar,
-            CartList
+            CartList,
+            CartBottomBar
         },
         computed:{
             // mapGetters 辅助函数仅仅是将 store 中的 getter 映射到局部计算属性：

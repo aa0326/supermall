@@ -12,11 +12,15 @@
         </scroll>
         <back-top @click="backClick" v-show="isShowBackTop"/>
         <detail-bottom-bar @addToCart="addToCart"></detail-bottom-bar>
+        <toast :is-show="show" :message="message"/>
     </div>
 </template>
 
 <script>
+    import {mapActions} from 'vuex'
+    import { defineComponent, getCurrentInstance } from 'vue'
     import Scroll from 'components/common/scroll/Scroll'
+    import Toast from 'components/common/toast/Toast'
     import GoodsList from 'components/content/goods/GoodsList'
 
     import DetailNavBar from './childComps/DetailNavBar'
@@ -45,7 +49,9 @@
                 recommendList:[],
                 themeTopYs:[],
                 getThemeTopY:null,
-                currentIndex:0
+                currentIndex:0,
+                message:'',
+                show:false
             }
         },
         created(){
@@ -67,6 +73,7 @@
             
         },
         methods:{
+            ...mapActions(['addCart']),
             //请求商品信息
             _getDetailData(){
                  //1.保存传入的iid
@@ -85,7 +92,7 @@
 
                     //获取商品详情信息
                     this.detailInfo = data.detailInfo
-                    console.log(data);
+                    
                     //获取参数信息
                     this.paramInfo = new GoodsParam(data.itemParams.info,data.itemParams.rule)
 
@@ -131,7 +138,20 @@
                 product.desc = this .detailInfo.desc;
                 product.price = this.goods.lowNowPrice
                 product.iid = this. iid;
-                this.$store.dispatch('addCart',product)
+
+                this.addCart(product).then(res=>{
+                    // console.log(res);
+                    this.show = true;
+                    this.message = res;
+                    setTimeout(()=>{
+                        this.show = false;
+                        this.message = ''
+                    },1500)
+
+                })
+                // this.$store.dispatch('addCart',product).then(res=>{
+                //     console.log(res);
+                // })
             }
         },
         components:{
@@ -144,7 +164,8 @@
             DetailGoodsInfo,
             DetailParamInfo,
             DetailCommentInfo,
-            DetailBottomBar
+            DetailBottomBar,
+            Toast
         }
     }
 </script>
